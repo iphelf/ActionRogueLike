@@ -70,7 +70,7 @@ void UYInteractionComponent::DoPrimaryInteract()
 		}
 
 		InteractionActor = FirstValidHitResult->GetActor();
-		DrawDebugSphere(GetWorld(), FirstValidHitResult->ImpactPoint, Radius, 32, TraceColor, false, 2.0f, 0, 2.0f);
+		DrawDebugSphere(GetWorld(), FirstValidHitResult->ImpactPoint, Radius, 32, TraceColor, false, 2.0f, 0, 1.0f);
 	}
 
 	IYGamePlayInterface::Execute_Interact(InteractionActor, OwnerPawn);
