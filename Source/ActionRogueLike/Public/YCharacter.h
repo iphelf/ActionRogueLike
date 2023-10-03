@@ -34,8 +34,12 @@ public:
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
-	void BeginPrimaryAttack();
-	void DeliverPrimaryAttack();
+
+	DECLARE_DELEGATE_OneParam(SkillDelegate, int);
+
+	void BeginAttack(int SkillId);
+	void DeliverAttack(int SkillId);
+
 	void DoPrimaryInteract();
 
 	UPROPERTY(VisibleAnywhere)
@@ -48,7 +52,16 @@ protected:
 	UYInteractionComponent* InteractionComp;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AActor> MagicProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> BlackholeProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> TeleportProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	float AimRange;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim{ nullptr };

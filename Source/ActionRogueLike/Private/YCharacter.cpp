@@ -25,12 +25,17 @@ AYCharacter::AYCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+	AimRange = 5e4f;
 }
 
 // Called when the game starts or when spawned
 void AYCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	ensure(MagicProjectileClass);
+	ensure(BlackholeProjectileClass);
+	ensure(TeleportProjectileClass);
 }
 
 // Called every frame
@@ -50,7 +55,10 @@ void AYCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAction("PrimaryAttack", EInputEvent::IE_Pressed, this, &AYCharacter::BeginPrimaryAttack);
+	PlayerInputComponent->BindAction<SkillDelegate>("PrimaryAttack", EInputEvent::IE_Pressed, this, &AYCharacter::BeginAttack, 0);
+	PlayerInputComponent->BindAction<SkillDelegate>("Skill1", EInputEvent::IE_Pressed, this, &AYCharacter::BeginAttack, 1);
+	PlayerInputComponent->BindAction<SkillDelegate>("Skill2", EInputEvent::IE_Pressed, this, &AYCharacter::BeginAttack, 2);
+
 	PlayerInputComponent->BindAction("PrimaryInteract", EInputEvent::IE_Pressed, this, &AYCharacter::DoPrimaryInteract);
 
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
@@ -70,23 +78,49 @@ void AYCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void AYCharacter::BeginPrimaryAttack()
-{
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(AttackAnimTimerHandle, this, &AYCharacter::DeliverPrimaryAttack, 0.2f);
+void AYCharacter::BeginAttack(int SkillId) {
+	if (ensure(AttackAnim)) {
+		PlayAnimMontage(AttackAnim);
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindLambda([this, SkillId] { DeliverAttack(SkillId); });
+		GetWorldTimerManager().SetTimer(AttackAnimTimerHandle, TimerDelegate, 0.2f, false);
+	}
 }
 
-void AYCharacter::DeliverPrimaryAttack()
+void AYCharacter::DeliverAttack(int SkillId)
 {
-	FVector SpawnLocation{ GetMesh()->GetSocketLocation("PrimaryAttackSource") };
-	FRotator ControlRotation{ GetControlRotation() };
-	ControlRotation.Pitch = 0.0;
-	ControlRotation.Roll = 0.0;
-	FTransform SpawnTransform{ ControlRotation, SpawnLocation };
+	if (!ensure(0 <= SkillId && SkillId <= 2)) return;
+	FVector SpawnLocation{ GetMesh()->GetSocketLocation("AttackSource") };
+	FRotator Aim;
+	{
+		FVector AimStart{ CameraComp->GetComponentLocation() };
+		FVector AimEnd{ AimStart + GetControlRotation().Vector() * AimRange };
+		FHitResult HitResult;
+		FCollisionObjectQueryParams QueryParams;
+		QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		QueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+		if (GetWorld()->LineTraceSingleByObjectType(HitResult, AimStart, AimEnd, QueryParams)) {
+			AimEnd = HitResult.ImpactPoint;
+			DrawDebugString(GetWorld(), AimEnd, FString::Printf(TEXT("Aiming at %s"), *AimEnd.ToString()), nullptr, FColor::Red, 2.0f);
+		}
+		Aim = FRotationMatrix::MakeFromX(AimEnd - SpawnLocation).Rotator();
+	}
+	FTransform SpawnTransform{ Aim, SpawnLocation };
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParameters.Instigator = this;
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParameters);
+	switch (SkillId) {
+	case 0:
+		GetWorld()->SpawnActor<AActor>(MagicProjectileClass, SpawnTransform, SpawnParameters);
+		break;
+	case 1:
+		GetWorld()->SpawnActor<AActor>(BlackholeProjectileClass, SpawnTransform, SpawnParameters);
+		break;
+	case 2:
+		GetWorld()->SpawnActor<AActor>(TeleportProjectileClass, SpawnTransform, SpawnParameters);
+		break;
+	}
 }
 
 void AYCharacter::DoPrimaryInteract()
