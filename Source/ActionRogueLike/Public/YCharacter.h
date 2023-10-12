@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UYInteractionComponent;
 class UAnimMontage;
+class UYAttributeComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API AYCharacter : public ACharacter
@@ -50,6 +51,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UYInteractionComponent* InteractionComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
+	UYAttributeComponent* AttributeComp;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> MagicProjectileClass;

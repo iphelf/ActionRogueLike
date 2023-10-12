@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YInteractionComponent.h"
+#include "YAttributeComponent.h"
 
 // Sets default values
 AYCharacter::AYCharacter()
@@ -21,6 +22,8 @@ AYCharacter::AYCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<UYInteractionComponent>("Interaction");
+
+	AttributeComp = CreateDefaultSubobject<UYAttributeComponent>("Attribute");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
