@@ -20,11 +20,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ChangeHealth(float Delta);
 
+	UPROPERTY(BlueprintAssignable, Category = "Attributes")
+	FOnHealthChanged OnHealthChanged;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health;
-
-	UPROPERTY(BlueprintAssignable, Category = "Attributes")
-	FOnHealthChanged OnHealthChanged;
 };
 
