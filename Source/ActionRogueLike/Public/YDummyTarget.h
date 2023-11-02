@@ -29,7 +29,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* StaticMeshComp;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UYAttributeComponent* AttributeComp;
 
 	UFUNCTION()

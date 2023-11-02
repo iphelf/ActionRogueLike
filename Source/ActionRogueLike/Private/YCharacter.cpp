@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YInteractionComponent.h"
 #include "YAttributeComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Camera/CameraShakeBase.h"
 
 // Sets default values
 AYCharacter::AYCharacter()
@@ -30,6 +32,12 @@ AYCharacter::AYCharacter()
 	bUseControllerRotationYaw = false;
 
 	AimRange = 5e4f;
+}
+
+void AYCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AYCharacter::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -123,11 +131,26 @@ void AYCharacter::DeliverAttack(int SkillId)
 	case 2:
 		GetWorld()->SpawnActor<AActor>(TeleportProjectileClass, SpawnTransform, SpawnParameters);
 		break;
+	default:
+		return;
 	}
+	if (ensure(SpellCastingEffect))
+		UGameplayStatics::SpawnEmitterAttached(SpellCastingEffect, GetMesh(), "AttackSource");
 }
 
 void AYCharacter::DoPrimaryInteract()
 {
 	InteractionComp->DoPrimaryInteract();
+}
+
+void AYCharacter::OnHealthChanged(AActor* Cause, UYAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (Delta < 0.0f) {
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->GetTimeSeconds());
+	}
+	if (NewHealth <= 0.0f && 0.0f < NewHealth - Delta) {
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+	}
 }
 

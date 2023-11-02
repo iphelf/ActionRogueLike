@@ -20,6 +20,7 @@ class ACTIONROGUELIKE_API AYCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AYCharacter();
+	void PostInitializeComponents() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,6 +32,11 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+public:
+	UYAttributeComponent* GetAttribute() {
+		return AttributeComp;
+	}
 
 protected:
 	void MoveForward(float Value);
@@ -70,5 +76,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim{ nullptr };
 	FTimerHandle AttackAnimTimerHandle{};
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* Cause, UYAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack")
+	TObjectPtr<UParticleSystem> SpellCastingEffect;
 };
 

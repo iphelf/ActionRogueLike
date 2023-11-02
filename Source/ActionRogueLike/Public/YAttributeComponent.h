@@ -17,6 +17,10 @@ class ACTIONROGUELIKE_API UYAttributeComponent : public UActorComponent
 public:
 	UYAttributeComponent();
 
+	void BeginPlay();
+
+	float GetHealthRatio() const;
+
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ChangeHealth(float Delta);
 
@@ -25,6 +29,12 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float HealthMax;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
 };
 

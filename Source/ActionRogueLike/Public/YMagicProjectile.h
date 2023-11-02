@@ -29,4 +29,16 @@ protected:
 
 	UFUNCTION()
 	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
+	TObjectPtr<UParticleSystem> HitEffectTemplate;
+
+	UPROPERTY(VisibleAnywhere, Category = "Projectile")
+	UAudioComponent* FlightSoundComp;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
+	TObjectPtr<USoundBase> ImpactSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
+	TSubclassOf<UCameraShakeBase> HitCameraShake;
 };
+

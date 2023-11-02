@@ -13,9 +13,6 @@ class UYGamePlayInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- *
- */
 class ACTIONROGUELIKE_API IYGamePlayInterface
 {
 	GENERATED_BODY()

@@ -10,7 +10,7 @@ class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 
-UCLASS()
+UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API AYProjectile : public AActor
 {
 	GENERATED_BODY()
@@ -37,3 +37,4 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* EffectComp;
 };
+
