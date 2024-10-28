@@ -76,3 +76,4 @@ DerivedDataCache/*
 
 # IDE specific files
 /.idea
+*.user
