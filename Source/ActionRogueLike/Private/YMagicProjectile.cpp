@@ -46,7 +46,7 @@ void AYMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Ot
 
 	FVector HitLocation{ GetActorLocation() };
 
-	// 为何会被不可见平面遮挡？
+	// 涓轰綍浼氳涓嶅彲瑙佸钩闈㈤伄鎸★紵
 	DrawDebugSphere(GetWorld(), HitLocation, 10.0f, 12, FColor{ 0xFFu, 0x8Du, 0x7Eu }, false, 1.0f);
 
 	if (ensure(HitEffectTemplate)) {
